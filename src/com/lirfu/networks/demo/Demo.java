@@ -50,7 +50,7 @@ public class Demo {
 
         int iteration = 0;
         double error, result;
-        while ((error = net.backpropagate(DataSeparator.separateData(inputs, outputs, 0.8))) > 5e-4) {
+        while ((error = net.backpropagate(DataSeparator.separateData(inputs, outputs, 0.8))) > 1e-2) {
             if (iteration++ % 1000 == 0) {
                 result = net.getOutput(inputs[inputIndex]).get(0, 0);
                 errorsGraph.add(error);
@@ -67,11 +67,8 @@ public class Demo {
         for (int index = 0; index < inputs.length; index++)
             finalResults.add(net.getOutput(inputs[index]).get(0, 0), outputs[index].get(0, 0));
 
-        Window window = new Window(new VerticalContainer(
+        new Window(new VerticalContainer(
                 new Row(errorsGraph), new Row(resultsGraph), new Row(finalResults)
-        ), true);
-        window.setSize(new Dimension(600, 800));
-        window.setVisibility(true);
-
+        ), true, true);
     }
 }
