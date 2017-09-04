@@ -7,7 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="JOGL-Graphics" />
     <orderEntry type="module" module-name="LirfuGraph" />
+    <orderEntry type="module" module-name="LirfuGraphicsLib" />
   </component>
 </module>
