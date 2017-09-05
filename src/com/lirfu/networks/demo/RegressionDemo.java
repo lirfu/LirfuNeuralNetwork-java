@@ -10,6 +10,7 @@ import com.lirfu.graphicslib.functions.Sigmoid;
 import com.lirfu.graphicslib.matrix.IMatrix;
 import com.lirfu.graphicslib.matrix.Matrix;
 import com.lirfu.graphicslib.vector.Vector;
+import com.lirfu.networks.SeparatedData;
 import com.lirfu.networks.layers.FullyConnectedLayer;
 import com.lirfu.networks.layers.InputLayer;
 
@@ -18,7 +19,7 @@ import java.awt.*;
 /**
  * Created by lirfu on 08.08.17..
  */
-public class Demo {
+public class RegressionDemo {
     public static void main(String[] args) throws IncompatibleOperandException {
         int numberOfPoints = 50;
 
@@ -48,9 +49,10 @@ public class Demo {
         int inputIndex = 3;
         DualLinearGraph resultsGraph = new DualLinearGraph("Results (" + inputIndex + ")");
 
+        SeparatedData data = DataSeparator.separateData(inputs, outputs, 0.8);
         int iteration = 0;
         double error, result;
-        while ((error = net.backpropagate(DataSeparator.separateData(inputs, outputs, 0.8))) > 1e-2) {
+        while ((error = net.backpropagate(data)) > 1e-3) {
             if (iteration++ % 1000 == 0) {
                 result = net.getOutput(inputs[inputIndex]).get(0, 0);
                 errorsGraph.add(error);
