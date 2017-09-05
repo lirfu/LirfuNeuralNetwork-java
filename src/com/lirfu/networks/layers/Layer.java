@@ -1,6 +1,7 @@
 package com.lirfu.networks.layers;
 
 import com.lirfu.graphicslib.matrix.IMatrix;
+import com.lirfu.graphicslib.matrix.MatrixDimension;
 
 /**
  * Created by lirfu on 08.08.17..<br>
@@ -33,6 +34,14 @@ public abstract class Layer{
      */
     public IMatrix getOutput() {
         return output;
+    }
+
+    /**
+     * Getter for the output dimension (describes this layer's neuron structure).
+     * @return
+     */
+    public MatrixDimension getOutputDimension(){
+        return output.getDimension();
     }
 
 }
