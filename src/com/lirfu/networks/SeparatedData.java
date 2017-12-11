@@ -1,6 +1,8 @@
 package com.lirfu.networks;
 
 import com.lirfu.graphicslib.matrix.IMatrix;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Created by lirfu on 03.09.17..<br>
@@ -21,7 +23,7 @@ public class SeparatedData {
      * @param testOutputs Array of output matrices for testing.
      * @throws IllegalArgumentException if array length of inputs and outputs arrays mismatch for training and testing sets accordingly.
      */
-    public SeparatedData(IMatrix[] trainingInputs, IMatrix[] trainingOutputs, IMatrix[] testInputs, IMatrix[] testOutputs) {
+    public SeparatedData(@NotNull IMatrix[] trainingInputs, @NotNull IMatrix[] trainingOutputs, @NotNull IMatrix[] testInputs, @NotNull IMatrix[] testOutputs) {
         if (trainingInputs.length != trainingOutputs.length)
             throw new IllegalArgumentException("Training data array lengths don't match: " + trainingInputs.length + " != " + trainingOutputs.length);
         if (testInputs.length != testOutputs.length)

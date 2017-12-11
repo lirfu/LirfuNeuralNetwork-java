@@ -58,7 +58,6 @@ public class Network {
             // Iterate through the rest of the layers (backwards)
             InnerLayer currentLayer;
             Layer leftLayer;
-            IMatrix differences;
             for (int i = hiddenLayers.length - 1; i >= 0; i--) {
                 currentLayer = hiddenLayers[i];
                 if (i == 0)
@@ -66,16 +65,17 @@ public class Network {
                 else
                     leftLayer = hiddenLayers[i - 1];
 
-                // Layer differences
-                differences = outDiff.nHadamardProduct(currentLayer.getNet().nApplyFunction(currentLayer.getFunction().getDerivative()).nTranspose(false));
-
-                // Update the differences for the next iteration
-                outDiff = currentLayer.getWeights().nMultiply(differences);
+//                // Layer differences
+//                differences = outDiff.nHadamardProduct(currentLayer.getNet().nApplyFunction(currentLayer.getFunction().getDerivative()).nTranspose(false));
+//
+//                // Update the differences for the next iteration
+//                outDiff = currentLayer.getWeights().nMultiply(differences);
 
                 // Update weights
 //                currentLayer.getWeights().add(differences.nMultiply(leftLayer.getOutput()).scalarMultiply(learningRate).nTranspose(false));
-                currentLayer.updateWeights(differences, leftLayer.getOutput(), learningRate);
-                currentLayer.getBiases().add(differences.scalarMultiply(learningRate).nTranspose(false));
+//                currentLayer.getBiases().add(differences.scalarMultiply(learningRate).nTranspose(false));
+
+                outDiff = currentLayer.backwardPass(outDiff, leftLayer.getOutput(), learningRate);
             }
         }
 

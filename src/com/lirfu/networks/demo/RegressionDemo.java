@@ -36,7 +36,7 @@ public class RegressionDemo {
 
         /* Build the network. */
         Network net = new Network(
-                3e-3,
+                1e-4,
                 new InputLayer(1),
                 new FullyConnectedLayer(1, 6, new Sigmoid()),
                 new FullyConnectedLayer(6, 1, new Linear())
@@ -47,7 +47,7 @@ public class RegressionDemo {
         LinearGraph errorsGraph = new LinearGraph("Total error");
 
         int inputIndex = 3;
-        DualLinearGraph resultsGraph = new DualLinearGraph("Results (" + inputIndex + ")");
+        DualLinearGraph resultsGraph = new DualLinearGraph("Results for input #" + inputIndex);
 
         SeparatedData data = DataSeparator.separateData(inputs, outputs, 0.8);
         int iteration = 0;

@@ -2,7 +2,6 @@ package com.lirfu.networks.demo;
 
 import com.lirfu.graphicslib.IncompatibleOperandException;
 import com.lirfu.graphicslib.functions.DerivativeFunction;
-import com.lirfu.graphicslib.functions.Function;
 import com.lirfu.graphicslib.functions.Sigmoid;
 import com.lirfu.graphicslib.matrix.IMatrix;
 import com.lirfu.graphicslib.matrix.Matrix;
@@ -12,14 +11,11 @@ import com.lirfu.lirfugraph.LinearGraph;
 import com.lirfu.lirfugraph.Row;
 import com.lirfu.lirfugraph.VerticalContainer;
 import com.lirfu.lirfugraph.Window;
-import com.lirfu.networks.DataSeparator;
 import com.lirfu.networks.Network;
-import com.lirfu.networks.SeparatedData;
 import com.lirfu.networks.datatransformations.BinaryImage;
 import com.lirfu.networks.datatransformations.MalformedFileException;
 import com.lirfu.networks.layers.ConvolutionLayer;
 import com.lirfu.networks.layers.FullyConnectedLayer;
-import com.lirfu.networks.layers.GridInputLayer;
 import com.lirfu.networks.layers.InputLayer;
 
 import java.io.File;
@@ -52,7 +48,10 @@ public class ImageClassifierDemo {
                 1e-2,
                 new InputLayer(dimension),
                 new ConvolutionLayer(dimension, templateSize, activation),
-                new FullyConnectedLayer(0, 3, activation)
+                new ConvolutionLayer(new MatrixDimension(8,8), templateSize, activation),
+                new ConvolutionLayer(new MatrixDimension(6,6), templateSize, activation),
+                new ConvolutionLayer(new MatrixDimension(4,4), templateSize, activation),
+                new ConvolutionLayer(new MatrixDimension(2,2), new MatrixDimension(2,2), activation)
         );
 
         LinearGraph errorsGraph = new LinearGraph("Total error");
