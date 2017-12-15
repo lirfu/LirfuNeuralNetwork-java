@@ -9,10 +9,13 @@ import java.util.ArrayList;
  * Class implements separation of input-output data pairs into the training and test sets of data pairs.
  */
 public class DataSeparator {
+    public static SeparatedData simpleData(IMatrix[] inputs, IMatrix[] outputs) {
+        return new SeparatedData(inputs, outputs, inputs, outputs);
+    }
+
     /**
-     *
-     * @param inputs Array of input matrices.
-     * @param outputs Array of output matrices.
+     * @param inputs                   Array of input matrices.
+     * @param outputs                  Array of output matrices.
      * @param percentageOfTrainingData Percentage of training data selected from the given data.
      * @return Object that encapsulates the separated data.
      * @throws IllegalArgumentException if inputs and outputs array lengths mismatch.
@@ -48,5 +51,18 @@ public class DataSeparator {
                 testInputs.toArray(new IMatrix[]{}),
                 testOutputs.toArray(new IMatrix[]{})
         );
+    }
+
+    public static SeparatedData[] toBatch(SeparatedData data) {
+        return new SeparatedData[]{data};
+    }
+
+    public static SeparatedData[] toStocastic(SeparatedData data) {
+        SeparatedData[] batch = new SeparatedData[data.getTrainingInputs().length];
+
+        for (int i = 0; i < batch.length; i++)
+            batch[i] = DataSeparator.simpleData(new IMatrix[]{data.getTrainingInputs()[i]}, new IMatrix[]{data.getTrainingOutputs()[i]});
+
+        return batch;
     }
 }
