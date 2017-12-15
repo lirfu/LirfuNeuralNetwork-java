@@ -4,6 +4,8 @@ import com.lirfu.graphicslib.matrix.IMatrix;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
+import java.util.Random;
+
 /**
  * Created by lirfu on 03.09.17..<br>
  * SeparatedData encapsulates the data needed to train the neural network.<br>
@@ -17,10 +19,11 @@ public class SeparatedData {
 
     /**
      * Constructor for encapsulating individual sets of training and test input-output pairs.
-     * @param trainingInputs Array of input matrices for training.
+     *
+     * @param trainingInputs  Array of input matrices for training.
      * @param trainingOutputs Array of output matrices for training.
-     * @param testInputs Array of input matrices for testing.
-     * @param testOutputs Array of output matrices for testing.
+     * @param testInputs      Array of input matrices for testing.
+     * @param testOutputs     Array of output matrices for testing.
      * @throws IllegalArgumentException if array length of inputs and outputs arrays mismatch for training and testing sets accordingly.
      */
     public SeparatedData(@NotNull IMatrix[] trainingInputs, @NotNull IMatrix[] trainingOutputs, @NotNull IMatrix[] testInputs, @NotNull IMatrix[] testOutputs) {
@@ -35,6 +38,24 @@ public class SeparatedData {
 
         this.testInputs = testInputs;
         this.testOutputs = testOutputs;
+    }
+
+    public void shuffleData() {
+        Random rand = new Random();
+        for (int i = 0; i < trainingInputs.length && i < testInputs.length; i++)
+            if (rand.nextBoolean()) {
+                int randIndexTr = rand.nextInt(trainingInputs.length);
+                int randIndexTs = rand.nextInt(testInputs.length);
+
+                IMatrix tI = trainingInputs[randIndexTr];
+                trainingInputs[randIndexTr] = testInputs[randIndexTs];
+                testInputs[randIndexTs] = tI;
+
+                IMatrix tO = trainingOutputs[randIndexTr];
+                trainingOutputs[randIndexTr] = testOutputs[randIndexTs];
+                testOutputs[randIndexTs] = tO;
+
+            }
     }
 
     public IMatrix[] getTrainingInputs() {
