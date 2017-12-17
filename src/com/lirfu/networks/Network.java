@@ -52,6 +52,7 @@ public class Network {
 
                 // Forward pass to get output
                 IMatrix guessedOutput = getOutput(input);
+
                 // Calculate the output difference
                 outDiff.add(targetOutput.nSub(guessedOutput));
             }
@@ -86,7 +87,7 @@ public class Network {
         */
             error += calculateError(batch.getTestInputs(), batch.getTestOutputs());
         }
-        return error;
+        return error / dataBatches.length; // Return normalized error
     }
 
     public double calculateError(IMatrix[] inputs, IMatrix[] outputs) {
