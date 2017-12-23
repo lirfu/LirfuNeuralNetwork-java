@@ -22,6 +22,13 @@ public abstract class Layer {
         this.output = output;
     }
 
+    protected Layer(Layer layer) {
+        if (layer.net != null)
+            net = layer.net.copy();
+        if (layer.output != null)
+            output = layer.output.copy();
+    }
+
     /**
      * Getter for the last calculated net inputs for layer's neurons.
      *
@@ -61,4 +68,5 @@ public abstract class Layer {
         return output.getDimension();
     }
 
+    public abstract Layer copy();
 }

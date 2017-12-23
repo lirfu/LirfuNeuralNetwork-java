@@ -3,8 +3,7 @@ package com.lirfu.networks.layers;
 import com.lirfu.graphicslib.functions.DerivativeFunction;
 import com.lirfu.graphicslib.matrix.IMatrix;
 import com.lirfu.graphicslib.matrix.Matrix;
-
-import java.util.Random;
+import com.lirfu.networks.initializers.WeightInitializer;
 
 /**
  * Created by lirfu on 24.08.17..<br>
@@ -12,6 +11,7 @@ import java.util.Random;
  * It stores the layer's weights, bias values and the activation function.
  */
 public abstract class InnerLayer extends Layer {
+    protected int inputSize;
     protected DerivativeFunction function;
     protected IMatrix weights;
     protected IMatrix biases;
@@ -23,22 +23,23 @@ public abstract class InnerLayer extends Layer {
      * @param outputSize Number of this layer's outputs (number of neurons).
      * @param function   The layer's activation function.
      */
-    protected InnerLayer(int inputSize, int outputSize, DerivativeFunction function) {
+    protected InnerLayer(int inputSize, int outputSize, DerivativeFunction function, WeightInitializer initializer) {
         super(new Matrix(1, outputSize));
 
+        this.inputSize = inputSize;
         this.function = function;
+
+        biases = new Matrix(1, outputSize);
+        weights = new Matrix(inputSize, outputSize);
+        initializer.initialize(biases, weights);
     }
 
-    /**
-     * Method for fetching the next random double.
-     *
-     * @param rand The instance of Random.
-     * @param min  The range minimum.
-     * @param max  The range maximum.
-     * @return The next random value from the given range.
-     */
-    protected double nextRandom(Random rand, double min, double max) {
-        return rand.nextDouble() * (max - min) + min;
+    protected InnerLayer(InnerLayer innerLayer){
+        super(innerLayer);
+        inputSize = innerLayer.inputSize;
+        function = innerLayer.function;
+        weights = innerLayer.weights.copy();
+        biases = innerLayer.biases.copy();
     }
 
     /**

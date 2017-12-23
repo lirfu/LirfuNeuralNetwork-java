@@ -8,6 +8,8 @@ import com.lirfu.networks.layers.InputLayer;
 import com.lirfu.networks.layers.Layer;
 import org.omg.PortableServer.IMPLICIT_ACTIVATION_POLICY_ID;
 
+import java.util.Arrays;
+
 /**
  * Created by lirfu on 08.08.17..
  */
@@ -18,6 +20,13 @@ public class Network {
     public Network(InputLayer inputLayer, InnerLayer... hiddenLayers) {
         this.hiddenLayers = hiddenLayers;
         this.inputLayer = inputLayer;
+    }
+
+    public Network(Network network) {
+        inputLayer = (InputLayer) network.inputLayer.copy();
+        hiddenLayers = new InnerLayer[network.hiddenLayers.length];
+        for (int i = 0; i < hiddenLayers.length; i++)
+            hiddenLayers[i] = (InnerLayer) network.hiddenLayers[i].copy();
     }
 
     /**

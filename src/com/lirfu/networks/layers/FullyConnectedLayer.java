@@ -2,28 +2,18 @@ package com.lirfu.networks.layers;
 
 import com.lirfu.graphicslib.functions.DerivativeFunction;
 import com.lirfu.graphicslib.matrix.IMatrix;
-import com.lirfu.graphicslib.matrix.Matrix;
-
-import java.util.Random;
+import com.lirfu.networks.initializers.WeightInitializer;
 
 /**
  * Created by lirfu on 08.08.17..
  */
 public class FullyConnectedLayer extends InnerLayer {
-    public FullyConnectedLayer(int inputSize, int outputSize, DerivativeFunction function) {
-        super(inputSize, outputSize, function);
+    public FullyConnectedLayer(int inputSize, int outputSize, DerivativeFunction function, WeightInitializer initializer) {
+        super(inputSize, outputSize, function, initializer);
+    }
 
-        biases = new Matrix(1, outputSize);
-        weights = new Matrix(inputSize, outputSize);
-
-        // Init weight values
-        Random rand = new Random();
-        for (int c = 0; c < weights.getColsCount(); c++) {
-            for (int r = 0; r < weights.getRowsCount(); r++)
-                weights.set(r, c, nextRandom(rand, -1, 1));
-
-            biases.set(0, c, nextRandom(rand, -1, 1));
-        }
+    private FullyConnectedLayer(FullyConnectedLayer fullyConnectedLayer) {
+        super(fullyConnectedLayer);
     }
 
     public void forwardPass(Layer leftLayer) {
@@ -43,5 +33,10 @@ public class FullyConnectedLayer extends InnerLayer {
         biases.add(differences.scalarMultiply(learningRate).nTranspose(false));
 
         return outputDifferences;
+    }
+
+    @Override
+    public Layer copy() {
+        return new FullyConnectedLayer(this);
     }
 }
