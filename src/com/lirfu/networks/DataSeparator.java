@@ -57,6 +57,7 @@ public class DataSeparator {
         return new SeparatedData[]{data};
     }
 
+    // FIXME Not working for test sets different from training sets.
     public static SeparatedData[] toStocastic(SeparatedData data) {
         SeparatedData[] batch = new SeparatedData[data.getTrainingInputs().length];
 
@@ -64,5 +65,26 @@ public class DataSeparator {
             batch[i] = DataSeparator.simpleData(new IMatrix[]{data.getTrainingInputs()[i]}, new IMatrix[]{data.getTrainingOutputs()[i]});
 
         return batch;
+    }
+
+    // FIXME Not working for test sets different from training sets.
+    public static SeparatedData[] toMiniBatch(SeparatedData data, int batchSize, boolean shuffle) {
+        int size = data.getTrainingInputs().length;
+
+        if(shuffle)
+        data.shuffleData();
+
+        SeparatedData[] dataMB = new SeparatedData[(int) Math.ceil(size / (double) batchSize)];
+        for (int i = 0; i < size; ) {
+            ArrayList<IMatrix> batchI = new ArrayList<>();
+            ArrayList<IMatrix> batchO = new ArrayList<>();
+            for (int j = 0; j < batchSize && i < size; j++, i++) {
+                batchI.add(data.getTrainingInputs()[i]);
+                batchO.add(data.getTrainingOutputs()[i]);
+            }
+            dataMB[(i - 1) / batchSize] = DataSeparator.simpleData(batchI.toArray(new IMatrix[]{}), batchO.toArray(new IMatrix[]{}));
+        }
+
+        return dataMB;
     }
 }
