@@ -15,6 +15,8 @@ public abstract class InnerLayer extends Layer {
     protected DerivativeFunction function;
     protected IMatrix weights;
     protected IMatrix biases;
+    protected IMatrix weightDeltas;
+    protected IMatrix biasDeltas;
 
     /**
      * Constructor for an abstract inner (or output) layer.
@@ -31,19 +33,26 @@ public abstract class InnerLayer extends Layer {
 
         biases = new Matrix(1, outputSize);
         weights = new Matrix(inputSize, outputSize);
+
+        biasDeltas = new Matrix(1, outputSize);
+        weightDeltas = new Matrix(inputSize, outputSize);
+
         initializer.initialize(biases, weights);
     }
 
-    protected InnerLayer(InnerLayer innerLayer){
+    protected InnerLayer(InnerLayer innerLayer) {
         super(innerLayer);
         inputSize = innerLayer.inputSize;
         function = innerLayer.function;
         weights = innerLayer.weights.copy();
         biases = innerLayer.biases.copy();
+        weightDeltas = innerLayer.weightDeltas.copy();
+        biasDeltas = innerLayer.biasDeltas.copy();
     }
 
     /**
      * Getter for the weight matrix of this layer.
+     *
      * @return The matrix of weights.
      */
     public IMatrix getWeights() {
@@ -67,7 +76,7 @@ public abstract class InnerLayer extends Layer {
     public abstract void forwardPass(Layer leftLayer);
 
     /**
-     * Updates the weight values
+     * Accumulates the weight changes (deltas).
      *
      * @param outDiff      Errors from the last layer or total error if this is the output layer.
      * @param leftOutputs  Outputs from the last layer.
@@ -75,4 +84,9 @@ public abstract class InnerLayer extends Layer {
      * @return Processed errors from the last layer (to be used by the left layer).
      */
     public abstract IMatrix backwardPass(IMatrix outDiff, IMatrix leftOutputs, double learningRate);
+
+    /**
+     * Updates the weights with accumulated deltas. Resets the deltas.
+     */
+    public abstract void updateWeights();
 }

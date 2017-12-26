@@ -52,31 +52,31 @@ public class Network {
 
     public double backpropagate(double learningRate, SeparatedData[] dataBatches) throws IncompatibleOperandException {
         double error = 0;
+        // Updating for each batch.
         for (SeparatedData batch : dataBatches) {
-            IMatrix outDiff = new Matrix(batch.getTrainingOutputs()[0].getDimension());
-
+            // Accumulating deltas for each sample in batch.
             for (int i = 0; i < batch.getTrainingInputs().length; i++) {
                 IMatrix input = batch.getTrainingInputs()[i];
                 IMatrix targetOutput = batch.getTrainingOutputs()[i];
+                IMatrix outDiff = new Matrix(targetOutput.getDimension());
 
                 // Forward pass to get output
                 IMatrix guessedOutput = getOutput(input);
 
                 // Calculate the output difference
                 outDiff.add(guessedOutput.nSub(targetOutput));
-            }
 
-            outDiff = outDiff.scalarMultiply(1. / batch.getTrainingInputs().length).nTranspose(false);
+                outDiff = outDiff.nTranspose(false); // FIXME .scalarMultiply(1. / batch.getTrainingInputs().length)
 
-            // Iterate through the rest of the layers (backwards)
-            InnerLayer currentLayer;
-            Layer leftLayer;
-            for (int i = hiddenLayers.length - 1; i >= 0; i--) {
-                currentLayer = hiddenLayers[i];
-                if (i == 0)
-                    leftLayer = inputLayer;
-                else
-                    leftLayer = hiddenLayers[i - 1];
+                // Iterate through the rest of the layers (backwards)
+                InnerLayer currentLayer;
+                Layer leftLayer;
+                for (int l = hiddenLayers.length - 1; l >= 0; l--) {
+                    currentLayer = hiddenLayers[l];
+                    if (l == 0)
+                        leftLayer = inputLayer;
+                    else
+                        leftLayer = hiddenLayers[l - 1];
 
 //                // Layer differences
 //                differences = outDiff.nHadamardProduct(currentLayer.getNet().nApplyFunction(currentLayer.getFunction().getDerivative()).nTranspose(false));
@@ -84,15 +84,20 @@ public class Network {
 //                // Update the differences for the next iteration
 //                outDiff = currentLayer.getWeights().nMultiply(differences);
 
-                // Update weights
+                    // Update weights
 //                currentLayer.getWeights().add(differences.nMultiply(leftLayer.getOutput()).scalarMultiply(learningRate).nTranspose(false));
 //                currentLayer.getBiases().add(differences.scalarMultiply(learningRate).nTranspose(false));
 
-                outDiff = currentLayer.backwardPass(outDiff, leftLayer.getOutput(), learningRate);
+                    // Accumulate deltas throughout the network.
+                    outDiff = currentLayer.backwardPass(outDiff, leftLayer.getOutput(), learningRate);
+                }
             }
-        /*
-        Use test inputs to calculate the final error.
-        */
+
+            // Update weights with accumulated deltas.
+            for (InnerLayer layer : hiddenLayers)
+                layer.updateWeights();
+
+            // Use test inputs to calculate the final error.
             error += calculateError(batch.getTestInputs(), batch.getTestOutputs());
         }
         return error / dataBatches.length; // Return normalized error

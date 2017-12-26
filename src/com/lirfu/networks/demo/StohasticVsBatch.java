@@ -32,9 +32,9 @@ public class StohasticVsBatch {
             outputs[i] = new Matrix(new Vector(func(input)));
         }
 
-        WeightInitializer initializer = new RandomInitializer(-1.5, 1.5);
-        DescendMethod descendMethod = new VanillaGradientDescend();
-//        DescendMethod descendMethod = new MomentumDescend(0.9);
+        WeightInitializer initializer = new RandomInitializer(-1, 1);
+//        DescendMethod descendMethod = new VanillaGradientDescend();
+        DescendMethod descendMethod = new MomentumDescend(0.9);
 
         /* Build the network. */
         Network netBatc = new Network(
