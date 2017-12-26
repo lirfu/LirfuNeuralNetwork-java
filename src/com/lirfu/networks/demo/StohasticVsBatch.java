@@ -7,14 +7,19 @@ import com.lirfu.graphicslib.matrix.Matrix;
 import com.lirfu.graphicslib.vector.Vector;
 import com.lirfu.lirfugraph.*;
 import com.lirfu.networks.*;
+import com.lirfu.networks.descendmethods.DescendMethod;
+import com.lirfu.networks.descendmethods.MomentumDescend;
+import com.lirfu.networks.descendmethods.VanillaGradientDescend;
 import com.lirfu.networks.initializers.RandomInitializer;
 import com.lirfu.networks.initializers.WeightInitializer;
 import com.lirfu.networks.layers.FullyConnectedLayer;
 import com.lirfu.networks.layers.InputLayer;
 
 public class StohasticVsBatch {
+    static Point2D bounds = new Point2D(0, Math.PI);
+
     public static void main(String[] args) {
-        int numberOfPoints = 40;
+        int numberOfPoints = 50;
 
         /* Define data. */
         IMatrix[] inputs = new IMatrix[numberOfPoints];
@@ -22,47 +27,80 @@ public class StohasticVsBatch {
 
         double input;
         for (int i = 0; i < numberOfPoints; i++) {
-            input = i * 1.24 * Math.PI / numberOfPoints;
+            input = i * (bounds.y - bounds.x) / numberOfPoints + bounds.x;
             inputs[i] = new Matrix(new Vector(input));
-            outputs[i] = new Matrix(new Vector(4 * Math.sin(2 * input) + 5));
+            outputs[i] = new Matrix(new Vector(func(input)));
         }
 
-        WeightInitializer initializer = new RandomInitializer(-1,1);
+        WeightInitializer initializer = new RandomInitializer(-1.5, 1.5);
+        DescendMethod descendMethod = new VanillaGradientDescend();
+//        DescendMethod descendMethod = new MomentumDescend(0.9);
 
         /* Build the network. */
-        Network netStoh = new Network(
+        Network netBatc = new Network(
                 new InputLayer(1),
-                new FullyConnectedLayer(1, 6, new Sigmoid(), initializer),
-                new FullyConnectedLayer(6, 1, new Linear(), initializer)
+                new FullyConnectedLayer(1, 5, new Sigmoid(), descendMethod, initializer),
+                new FullyConnectedLayer(5, 1, new Linear(), descendMethod, initializer)
         );
-        Network netBatc = new Network(netStoh);
+        Network netStoh = new Network(netBatc);
+        Network netMB = new Network(netBatc);
+
+        System.out.println("INITIAL:");
+        System.out.println("  - Batch:");
+        System.out.println(netBatc);
+        System.out.println("  - Stochastic:");
+        System.out.println(netStoh);
+        System.out.println("  - Minibatch:");
+        System.out.println(netMB);
 
         /* Collect training results. */
 
-        MultiLinearGraph errorsGraph = new MultiLinearGraph("Total error", 2, "Stochastic", "Batch");
+        MultiLinearGraph errorsGraph = new MultiLinearGraph("Total error", 3, "Stochastic", "Batch", "Minibatch");
 
         SeparatedData[] dataB = DataSeparator.toBatch(DataSeparator.simpleData(inputs, outputs));
         SeparatedData[] dataS = DataSeparator.toStocastic(DataSeparator.simpleData(inputs, outputs));
+        SeparatedData[] dataMB = DataSeparator.toMiniBatch(DataSeparator.simpleData(inputs, outputs), inputs.length / 4, true);
+
         int iteration = 0;
-        double errorB, errorS;
-        double lr = 7e-5;
-        while (iteration < 1_000_000) {
-            errorS = netStoh.backpropagate(1e-3, dataS);
+        double errorB, errorS, errorsMB;
+        double lr = 0.001;
+        while (iteration < 100_000) {
+            errorS = netStoh.backpropagate(lr, dataS);
             errorB = netBatc.backpropagate(lr, dataB);
+            errorsMB = netMB.backpropagate(lr, dataMB);
             if (iteration++ % 1000 == 0) {
-                errorsGraph.add(errorS, errorB);
-                System.out.println("Iteration " + iteration + " has errors:   " + errorS + "   " + errorB);
+                errorsGraph.add(errorS, errorB, errorsMB);
+                System.out.println("Iteration " + iteration + " has errors:   " + errorS + "   " + errorB + "   " + errorsMB);
             }
         }
 
+        System.out.println("RESULTS:");
+        System.out.println("  - Batch:");
+        System.out.println(netBatc);
+        System.out.println("  - Stochastic:");
+        System.out.println(netStoh);
+        System.out.println("  - Minibatch:");
+        System.out.println(netMB);
+
         /* Display the final results. */
 
-        MultiLinearGraph finalResults = new MultiLinearGraph("Final results", 3, "Stochastic", "Batch", "Data");
-        for (int index = 0; index < inputs.length; index++)
-            finalResults.add(netStoh.getOutput(inputs[index]).get(0, 0), netBatc.getOutput(inputs[index]).get(0, 0), outputs[index].get(0, 0));
+        MultiLinearGraph finalResults = new MultiLinearGraph("Final results", 4, "Stochastic", "Batch", "Minibatch", "Data");
+        finalResults.setShowDots(false);
+        for (double x = bounds.x; x <= bounds.y; x += 0.1)
+            finalResults.add(
+                    netStoh.getOutput(new Matrix(new Vector(x))).get(0, 0),
+                    netBatc.getOutput(new Matrix(new Vector(x))).get(0, 0),
+                    netMB.getOutput(new Matrix(new Vector(x))).get(0, 0),
+                    func(x)
+            );
 
         new Window(new VerticalContainer(
                 new Row(errorsGraph), new Row(finalResults)
         ), true, true);
+    }
+
+    private static double func(double input) {
+        return 4 * Math.sin(1.5 * input) + 5;
+//        return (input - 1) * (input - 1);
     }
 }
