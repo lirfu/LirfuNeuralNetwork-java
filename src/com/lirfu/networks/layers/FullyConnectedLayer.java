@@ -2,18 +2,26 @@ package com.lirfu.networks.layers;
 
 import com.lirfu.graphicslib.functions.DerivativeFunction;
 import com.lirfu.graphicslib.matrix.IMatrix;
+import com.lirfu.networks.descendmethods.DescendMethod;
 import com.lirfu.networks.initializers.WeightInitializer;
 
 /**
  * Created by lirfu on 08.08.17..
  */
 public class FullyConnectedLayer extends InnerLayer {
-    public FullyConnectedLayer(int inputSize, int outputSize, DerivativeFunction function, WeightInitializer initializer) {
+    private DescendMethod mWeightsDescendMethod;
+    private DescendMethod mBiasDescendMethod;
+
+    public FullyConnectedLayer(int inputSize, int outputSize, DerivativeFunction function, DescendMethod descendMethod, WeightInitializer initializer) {
         super(inputSize, outputSize, function, initializer);
+        mWeightsDescendMethod = descendMethod.copy();
+        mBiasDescendMethod = descendMethod.copy();
     }
 
     private FullyConnectedLayer(FullyConnectedLayer fullyConnectedLayer) {
         super(fullyConnectedLayer);
+        mWeightsDescendMethod = fullyConnectedLayer.mWeightsDescendMethod.copy();
+        mBiasDescendMethod = fullyConnectedLayer.mBiasDescendMethod.copy();
     }
 
     public void forwardPass(Layer leftLayer) {
@@ -29,8 +37,8 @@ public class FullyConnectedLayer extends InnerLayer {
         outputDifferences = weights.nMultiply(differences);
 
         // Update weight and bias values
-        weights.add(differences.nMultiply(leftOutputs).scalarMultiply(learningRate).nTranspose(false));
-        biases.add(differences.scalarMultiply(learningRate).nTranspose(false));
+        mWeightsDescendMethod.performDescend(weights, differences.nMultiply(leftOutputs).scalarMultiply(learningRate).nTranspose(false));
+        mBiasDescendMethod.performDescend(biases, differences.scalarMultiply(learningRate).nTranspose(false));
 
         return outputDifferences;
     }

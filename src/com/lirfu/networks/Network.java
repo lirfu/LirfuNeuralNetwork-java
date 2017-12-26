@@ -63,7 +63,7 @@ public class Network {
                 IMatrix guessedOutput = getOutput(input);
 
                 // Calculate the output difference
-                outDiff.add(targetOutput.nSub(guessedOutput));
+                outDiff.add(guessedOutput.nSub(targetOutput));
             }
 
             outDiff = outDiff.scalarMultiply(1. / batch.getTrainingInputs().length).nTranspose(false);
@@ -90,7 +90,6 @@ public class Network {
 
                 outDiff = currentLayer.backwardPass(outDiff, leftLayer.getOutput(), learningRate);
             }
-
         /*
         Use test inputs to calculate the final error.
         */
@@ -101,7 +100,6 @@ public class Network {
 
     public double calculateError(IMatrix[] inputs, IMatrix[] outputs) {
         double totalError = 0;
-
         for (int i = 0; i < inputs.length; i++) {
             // Forward pass to get output
             IMatrix guessedOutput = getOutput(inputs[i]);
@@ -114,7 +112,6 @@ public class Network {
                 for (int c = 0; c < outDiff.getColsCount(); c++)
                     totalError += outDiff.get(r, c) * outDiff.get(r, c);
         }
-
         return totalError * 0.5 / inputs.length;
     }
 
@@ -122,9 +119,10 @@ public class Network {
     public String toString() {
         String s = "";
 
-        for (int i = 1; i < hiddenLayers.length; i++)
+        for (int i = 0; i < hiddenLayers.length; i++)
             s += "\tLayer " + i + ":\n" + hiddenLayers[i].getWeights().toString(4) + "\n";
 
         return s;
     }
+
 }

@@ -12,6 +12,9 @@ import com.lirfu.graphicslib.functions.Sigmoid;
 import com.lirfu.graphicslib.matrix.IMatrix;
 import com.lirfu.graphicslib.matrix.Matrix;
 import com.lirfu.graphicslib.vector.Vector;
+import com.lirfu.networks.descendmethods.DescendMethod;
+import com.lirfu.networks.descendmethods.MomentumDescend;
+import com.lirfu.networks.descendmethods.VanillaGradientDescend;
 import com.lirfu.networks.initializers.RandomInitializer;
 import com.lirfu.networks.initializers.WeightInitializer;
 import com.lirfu.networks.layers.FullyConnectedLayer;
@@ -35,13 +38,15 @@ public class RegressionDemo {
             outputs[i] = new Matrix(new Vector(4 * Math.sin(2 * input) + 5));
         }
 
-        WeightInitializer initializer = new RandomInitializer(0,1);
+        WeightInitializer initializer = new RandomInitializer(-2, 2);
+        DescendMethod descendMethod = new VanillaGradientDescend();
+//        DescendMethod descendMethod = new MomentumDescend(0.9);
 
         /* Build the network. */
         Network net = new Network(
                 new InputLayer(1),
-                new FullyConnectedLayer(1, 6, new Sigmoid(), initializer),
-                new FullyConnectedLayer(6, 1, new Linear(), initializer)
+                new FullyConnectedLayer(1, 6, new Sigmoid(), descendMethod, initializer),
+                new FullyConnectedLayer(6, 1, new Linear(), descendMethod, initializer)
         );
 
         /* Collect training results. */
@@ -62,6 +67,10 @@ public class RegressionDemo {
                 System.out.println("Iteration " + iteration + " has error: " + error);
             }
         }
+        result = net.getOutput(inputs[inputIndex]).get(0, 0);
+        errorsGraph.add(error);
+        resultsGraph.add(result, outputs[inputIndex].get(0, 0));
+        System.out.println("Iteration " + iteration + " has error: " + error);
 
         /* Display the final results. */
 
