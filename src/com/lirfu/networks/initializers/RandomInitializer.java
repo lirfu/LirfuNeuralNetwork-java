@@ -8,14 +8,22 @@ public class RandomInitializer implements WeightInitializer {
     private double mMin;
     private double mMax;
 
+    private Random rand = new Random();
+
     public RandomInitializer(double min, double max) {
         mMin = min;
         mMax = max;
     }
 
     @Override
+    public void initialize(IMatrix weights) {
+        for (int c = 0; c < weights.getColsCount(); c++)
+            for (int r = 0; r < weights.getRowsCount(); r++)
+                weights.set(r, c, nextRandom(rand, mMin, mMax));
+    }
+
+    @Override
     public void initialize(IMatrix biases, IMatrix weights) {
-        Random rand = new Random();
         for (int c = 0; c < weights.getColsCount(); c++) {
             for (int r = 0; r < weights.getRowsCount(); r++)
                 weights.set(r, c, nextRandom(rand, mMin, mMax));
