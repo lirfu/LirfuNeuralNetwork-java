@@ -40,11 +40,9 @@ public class Network {
         Layer lastLayer = inputLayer;
         ((InputLayer) lastLayer).setOutput(input);
 
-        InnerLayer currentLayer;
         for (InnerLayer hiddenLayer : hiddenLayers) {
-            currentLayer = hiddenLayer;
-            currentLayer.forwardPass(lastLayer);
-            lastLayer = currentLayer;
+            hiddenLayer.forwardPass(lastLayer);
+            lastLayer = hiddenLayer;
         }
 
         return lastLayer.getOutput();
@@ -52,21 +50,19 @@ public class Network {
 
     public double backpropagate(double learningRate, SeparatedData[] dataBatches) throws IncompatibleOperandException {
         double error = 0;
+        int numberOfData = 0;
         // Updating for each batch.
         for (SeparatedData batch : dataBatches) {
             // Accumulating deltas for each sample in batch.
             for (int i = 0; i < batch.getTrainingInputs().length; i++) {
                 IMatrix input = batch.getTrainingInputs()[i];
                 IMatrix targetOutput = batch.getTrainingOutputs()[i];
-                IMatrix outDiff = new Matrix(targetOutput.getDimension());
 
                 // Forward pass to get output
                 IMatrix guessedOutput = getOutput(input);
 
                 // Calculate the output difference
-                outDiff.add(guessedOutput.nSub(targetOutput));
-
-                outDiff = outDiff.nTranspose(false); // FIXME .scalarMultiply(1. / batch.getTrainingInputs().length)
+                IMatrix outDiff = guessedOutput.nSub(targetOutput).nTranspose(false);
 
                 // Iterate through the rest of the layers (backwards)
                 InnerLayer currentLayer;
@@ -99,8 +95,9 @@ public class Network {
 
             // Use test inputs to calculate the final error.
             error += calculateError(batch.getTestInputs(), batch.getTestOutputs());
+            numberOfData += batch.getTestInputs().length;
         }
-        return error / dataBatches.length; // Return normalized error
+        return error / numberOfData; // Return normalized error
     }
 
     public double calculateError(IMatrix[] inputs, IMatrix[] outputs) {
@@ -117,7 +114,7 @@ public class Network {
                 for (int c = 0; c < outDiff.getColsCount(); c++)
                     totalError += outDiff.get(r, c) * outDiff.get(r, c);
         }
-        return totalError * 0.5 / inputs.length;
+        return totalError / 2;
     }
 
     @Override
@@ -125,7 +122,7 @@ public class Network {
         String s = "";
 
         for (int i = 0; i < hiddenLayers.length; i++)
-            s += "\tLayer " + i + ":\n" + hiddenLayers[i].getWeights().toString(4) + "\n";
+            s += "\tLayer " + i + ":\n" + hiddenLayers[i].toString() + "\n";
 
         return s;
     }
