@@ -10,7 +10,6 @@ import com.lirfu.graphicslib.matrix.MatrixDimension;
  * It stores the net inputs of the neurons in the layer and those neuron's outputs.
  */
 public abstract class Layer {
-    protected IMatrix net;
     protected IMatrix output;
 
     /**
@@ -23,19 +22,8 @@ public abstract class Layer {
     }
 
     protected Layer(Layer layer) {
-        if (layer.net != null)
-            net = layer.net.copy();
         if (layer.output != null)
             output = layer.output.copy();
-    }
-
-    /**
-     * Getter for the last calculated net inputs for layer's neurons.
-     *
-     * @return Matrix containing the neuron nets (dimensions describe the layer's neuron structure).
-     */
-    public IMatrix getNet() {
-        return net;
     }
 
     /**
