@@ -57,13 +57,20 @@ public class StohasticVsBatch {
 
         MultiLinearGraph errorsGraph = new MultiLinearGraph("Total error", 3, "Stochastic", "Batch", "Minibatch");
 
-        SeparatedData[] dataB = DataSeparator.toBatch(DataSeparator.simpleData(inputs, outputs));
-        SeparatedData[] dataS = DataSeparator.toStocastic(DataSeparator.simpleData(inputs, outputs));
-        SeparatedData[] dataMB = DataSeparator.toMiniBatch(DataSeparator.simpleData(inputs, outputs), inputs.length / 4, true);
+        SeparatedData data = DataSeparator.simpleData(inputs, outputs);
+        SeparatedData[] dataB = DataSeparator.toBatch(data);
+        SeparatedData[] dataS = DataSeparator.toStocastic(data);
+        SeparatedData[] dataMB = DataSeparator.toMiniBatch(data, inputs.length / 4, true);
 
         int iteration = 0;
         double errorB, errorS, errorsMB;
         double lr = 0.001;
+
+        errorS = netStoh.calculateError(data.getTestInputs(), data.getTestOutputs());
+        errorB = netBatc.calculateError(data.getTestInputs(), data.getTestOutputs());
+        errorsMB = netMB.calculateError(data.getTestInputs(), data.getTestOutputs());
+        System.out.println("Iteration " + iteration + " has errors:   " + errorS + "   " + errorB + "   " + errorsMB);
+
         while (iteration < 100_000) {
             errorS = netStoh.backpropagate(lr, dataS);
             errorB = netBatc.backpropagate(lr, dataB);
