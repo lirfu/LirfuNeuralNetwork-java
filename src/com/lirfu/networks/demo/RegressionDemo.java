@@ -34,8 +34,8 @@ public class RegressionDemo {
         double input;
         for (int i = 0; i < numberOfPoints; i++) {
             input = i * 2. * Math.PI / numberOfPoints;
-            inputs[i] = new Matrix(new Vector(input));
-            outputs[i] = new Matrix(new Vector(4 * Math.sin(2 * input) + 5));
+            inputs[i] = new Matrix(1,1,input);
+            outputs[i] = new Matrix(1,1,4 * Math.sin(2 * input) + 5);
         }
 
         WeightInitializer initializer = new RandomInitializer(-2, 2);
