@@ -1,7 +1,6 @@
 package com.lirfu.networks.layers;
 
 import com.lirfu.graphicslib.matrix.IMatrix;
-import com.lirfu.graphicslib.matrix.Matrix;
 import com.lirfu.graphicslib.matrix.MatrixDimension;
 
 /**
@@ -31,7 +30,7 @@ public abstract class Layer {
      *
      * @return Matrix containing the activated neuron outputs (dimensions describe the layer's neuron structure).
      */
-    public IMatrix getOutput() {
+    public final IMatrix getOutput() {
         return output;
     }
 
@@ -52,9 +51,36 @@ public abstract class Layer {
      *
      * @return
      */
-    public MatrixDimension getOutputDimension() {
+    public final MatrixDimension getOutputDimension() {
         return output.getDimension();
     }
+
+    /**
+     * Get number of neurons based on the output matrix (cols).
+     * @return
+     */
+    public int getNeuronNumber(){
+        return output.getColsCount();
+    }
+
+    /**
+     * Get the number of parameter that need to be learned.
+     */
+    public abstract int numberOfParameters();
+
+    /**
+     * Get weight values for neuron at given index.
+     * @param index Index of the neuron (counting from top to bottom).
+     * @return Array of neuron's weights serialized as: [b, w1, w2, ...]
+     */
+    public abstract double[] getNeuron(int index);
+
+    /**
+     * Set weight values for neuron at given index.
+     * @param index Index of the neuron (counting from top to bottom).
+     * @param values Array of neuron's weights serialized as: [b, w1, w2, ...]
+     */
+    public abstract void setNeuron(int index, double[] values);
 
     public abstract Layer copy();
 }

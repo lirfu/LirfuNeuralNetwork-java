@@ -11,10 +11,10 @@ public class InputLayer extends Layer {
     /**
      * Constructor for a 1D input layer.
      *
-     * @param outputSize Number of input neurons.
+     * @param neuronNumber Number of input neurons.
      */
-    public InputLayer(int outputSize) {
-        super(new Matrix(1, outputSize));
+    public InputLayer(int neuronNumber) {
+        super(new Matrix(1, neuronNumber));
     }
 
     private InputLayer(InputLayer inputLayer) {
@@ -41,6 +41,21 @@ public class InputLayer extends Layer {
             throw new IllegalArgumentException("Matrices are not the same size: " + this.output.getDimension() + " != " + output.getDimension());
 
         this.output = output;
+    }
+
+    @Override
+    public int numberOfParameters() {
+        return 0;
+    }
+
+    @Override
+    public double[] getNeuron(int index) {
+        return new double[0];
+    }
+
+    @Override
+    public void setNeuron(int index, double[] values) {
+        // do nothing
     }
 
     @Override

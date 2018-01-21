@@ -14,8 +14,10 @@ public class FullyConnectedLayer extends InnerLayer {
     protected DerivativeFunction function;
 
     protected IMatrix net;
+
     protected IMatrix weights;
     protected IMatrix biases;
+
     protected IMatrix weightDeltas;
     protected IMatrix biasDeltas;
 
@@ -23,17 +25,17 @@ public class FullyConnectedLayer extends InnerLayer {
     private DescendMethod mBiasDescendMethod;
 
 
-    public FullyConnectedLayer(int inputSize, int outputSize, DerivativeFunction function, DescendMethod descendMethod, WeightInitializer initializer) {
-        super(new Matrix(1, outputSize));
+    public FullyConnectedLayer(int inputSize, int neuronNumber, DerivativeFunction function, DescendMethod descendMethod, WeightInitializer initializer) {
+        super(new Matrix(1, neuronNumber));
 
         this.inputSize = inputSize;
         this.function = function;
 
-        biases = new Matrix(1, outputSize);
-        weights = new Matrix(inputSize, outputSize);
+        biases = new Matrix(1, neuronNumber);
+        weights = new Matrix(inputSize, neuronNumber);
 
-        biasDeltas = new Matrix(1, outputSize);
-        weightDeltas = new Matrix(inputSize, outputSize);
+        biasDeltas = new Matrix(1, neuronNumber);
+        weightDeltas = new Matrix(inputSize, neuronNumber);
 
         initializer.initialize(biases, weights);
 
@@ -96,6 +98,7 @@ public class FullyConnectedLayer extends InnerLayer {
     public IMatrix getNet() {
         return net;
     }
+
     /**
      * Getter for the weight matrix of this layer.
      *
@@ -115,6 +118,11 @@ public class FullyConnectedLayer extends InnerLayer {
     }
 
     @Override
+    public int numberOfParameters() {
+        return biases.getRowsCount() * biases.getColsCount() + weights.getRowsCount() * weights.getColsCount();
+    }
+
+    @Override
     public Layer copy() {
         return new FullyConnectedLayer(this);
     }
@@ -122,5 +130,24 @@ public class FullyConnectedLayer extends InnerLayer {
     @Override
     public String toString() {
         return biases.toString(2) + '\n' + weights.toString(2);
+    }
+
+    @Override
+    public double[] getNeuron(int index) {
+        double[] array = new double[inputSize + 1];
+
+        array[0] = biases.get(0, index);
+        for (int r = 0; r < weights.getRowsCount(); r++)
+            array[r + 1] = weights.get(r, index);
+
+        return array;
+    }
+
+    @Override
+    public void setNeuron(int index, double[] values) {
+        biases.set(0, index, values[0]);
+
+        for (int r = 0; r < weights.getRowsCount(); r++)
+            weights.set(r, index, values[r + 1]);
     }
 }
