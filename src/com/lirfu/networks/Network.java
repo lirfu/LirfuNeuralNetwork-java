@@ -127,4 +127,21 @@ public class Network {
         return s;
     }
 
+    public static int numberOfParameters(Network network) {
+        int sum = network.inputLayer.numberOfParameters();
+
+        for (InnerLayer l : network.hiddenLayers)
+            sum += l.numberOfParameters();
+
+        return sum;
+    }
+
+    public static Layer[] getAllLayers(Network network) {
+        Layer[] layers = new Layer[network.hiddenLayers.length + 1];
+        int index = 0;
+        layers[index++] = network.inputLayer;
+        for (Layer l : network.hiddenLayers)
+            layers[index++] = l;
+        return layers;
+    }
 }
