@@ -4,16 +4,14 @@ import com.lirfu.graphicslib.functions.Linear;
 import com.lirfu.lirfugraph.Row;
 import com.lirfu.lirfugraph.VerticalContainer;
 import com.lirfu.lirfugraph.Window;
-import com.lirfu.lirfugraph.DualLinearGraph;
-import com.lirfu.lirfugraph.LinearGraph;
+import com.lirfu.lirfugraph.graphs.DualLinearGraph;
+import com.lirfu.lirfugraph.graphs.LinearGraph;
 import com.lirfu.networks.*;
 import com.lirfu.graphicslib.IncompatibleOperandException;
 import com.lirfu.graphicslib.functions.Sigmoid;
 import com.lirfu.graphicslib.matrix.IMatrix;
 import com.lirfu.graphicslib.matrix.Matrix;
-import com.lirfu.graphicslib.vector.Vector;
 import com.lirfu.networks.descendmethods.DescendMethod;
-import com.lirfu.networks.descendmethods.MomentumDescend;
 import com.lirfu.networks.descendmethods.VanillaGradientDescend;
 import com.lirfu.networks.initializers.RandomInitializer;
 import com.lirfu.networks.initializers.WeightInitializer;
@@ -76,7 +74,7 @@ public class RegressionDemo {
 
         System.out.println("Weights:\n" + net.toString());
 
-        DualLinearGraph finalResults = new com.lirfu.lirfugraph.DualLinearGraph("Final results");
+        DualLinearGraph finalResults = new DualLinearGraph("Final results");
         for (int index = 0; index < inputs.length; index++)
             finalResults.add(net.getOutput(inputs[index]).get(0, 0), outputs[index].get(0, 0));
 

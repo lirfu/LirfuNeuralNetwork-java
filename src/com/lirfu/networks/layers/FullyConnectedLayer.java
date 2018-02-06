@@ -134,7 +134,7 @@ public class FullyConnectedLayer extends InnerLayer {
 
     @Override
     public double[] getNeuron(int index) {
-        double[] array = new double[inputSize + 1];
+        double[] array = new double[weights.getRowsCount() + 1];
 
         array[0] = biases.get(0, index);
         for (int r = 0; r < weights.getRowsCount(); r++)

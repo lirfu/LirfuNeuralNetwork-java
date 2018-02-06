@@ -7,7 +7,7 @@
 //import com.lirfu.graphicslib.matrix.Matrix;
 //import com.lirfu.graphicslib.matrix.MatrixDimension;
 //import com.lirfu.graphicslib.vector.Vector;
-//import com.lirfu.lirfugraph.LinearGraph;
+//import com.lirfu.lirfugraph.graphs.LinearGraph;
 //import com.lirfu.lirfugraph.Row;
 //import com.lirfu.lirfugraph.VerticalContainer;
 //import com.lirfu.lirfugraph.Window;
