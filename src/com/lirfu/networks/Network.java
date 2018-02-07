@@ -2,13 +2,9 @@ package com.lirfu.networks;
 
 import com.lirfu.graphicslib.IncompatibleOperandException;
 import com.lirfu.graphicslib.matrix.IMatrix;
-import com.lirfu.graphicslib.matrix.Matrix;
 import com.lirfu.networks.layers.InnerLayer;
 import com.lirfu.networks.layers.InputLayer;
 import com.lirfu.networks.layers.Layer;
-import org.omg.PortableServer.IMPLICIT_ACTIVATION_POLICY_ID;
-
-import java.util.Arrays;
 
 /**
  * Created by lirfu on 08.08.17..
@@ -94,7 +90,7 @@ public class Network {
                 layer.updateWeights();
 
             // Use test inputs to calculate the final error.
-            error += calculateError(batch.getTestInputs(), batch.getTestOutputs());
+            error += calculateError(batch.getTestInputs(), batch.getTestOutputs()) / 2;
             numberOfData += batch.getTestInputs().length;
         }
         return error / numberOfData; // Return normalized error
@@ -114,7 +110,7 @@ public class Network {
                 for (int c = 0; c < outDiff.getColsCount(); c++)
                     totalError += outDiff.get(r, c) * outDiff.get(r, c);
         }
-        return totalError / 2;
+        return totalError / inputs.length;
     }
 
     @Override
@@ -143,5 +139,11 @@ public class Network {
         for (Layer l : network.hiddenLayers)
             layers[index++] = l;
         return layers;
+    }
+
+    public static Layer getLayerAt(Network network, int index) {
+        if (index == 0)
+            return network.inputLayer;
+        return network.hiddenLayers[index - 1];
     }
 }
