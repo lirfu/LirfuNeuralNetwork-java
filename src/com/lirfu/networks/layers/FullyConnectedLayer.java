@@ -56,7 +56,7 @@ public class FullyConnectedLayer extends InnerLayer {
         mBiasDescendMethod = fullyConnectedLayer.mBiasDescendMethod.copy();
 
         if (fullyConnectedLayer.net != null)
-            net = fullyConnectedLayer.net;
+            net = fullyConnectedLayer.net.copy();
     }
 
     public void forwardPass(Layer leftLayer) {
