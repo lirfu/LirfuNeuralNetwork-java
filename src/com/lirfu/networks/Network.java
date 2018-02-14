@@ -103,7 +103,7 @@ public class Network {
             IMatrix guessedOutput = getOutput(inputs[i]);
 
             // Calculate the output difference
-            IMatrix outDiff = outputs[i].nSub(guessedOutput).nTranspose(false);
+            IMatrix outDiff = outputs[i].nSub(guessedOutput);
 
             // Calculate the total output error
             for (int r = 0; r < outDiff.getRowsCount(); r++)
@@ -115,12 +115,12 @@ public class Network {
 
     @Override
     public String toString() {
-        String s = "";
+        StringBuilder s = new StringBuilder();
 
         for (int i = 0; i < hiddenLayers.length; i++)
-            s += "\tLayer " + i + ":\n" + hiddenLayers[i].toString() + "\n";
+            s.append("\tLayer ").append(i).append(":\n").append(hiddenLayers[i].toString()).append("\n");
 
-        return s;
+        return s.toString();
     }
 
     public static int numberOfParameters(Network network) {
